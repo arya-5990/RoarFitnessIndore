@@ -67,13 +67,13 @@ const Trainers = () => {
         viewport={{ once: true }}
         className="container space-y-4 xl:space-y-6"
       >
-        <div className="flex items-center justify-between">
+        <div className="relative flex items-center justify-center">
           <h2 className="text-center text-xl font-semibold lg:text-2xl lg:font-bold xl:text-3xl">
             Meet Our <span className="text-primary">Trainers</span>
           </h2>
 
           {trainersData.length > 5 && (
-            <div className="flex items-center gap-2">
+            <div className="absolute right-0 hidden lg:flex items-center gap-2">
               <button onClick={() => handleScroll(-amount)}>
                 <img
                   src={arrowLeftWhite}

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   companyLinks,
   contactInfo,
@@ -5,10 +6,50 @@ import {
   resourcesLinks,
   socialIcons,
 } from "../constants";
+import { location, phone, email } from "../assets";
+import { db } from "../firebase";
+import { collection, getDocs, limit, query } from "firebase/firestore";
 import Logo from "./reusable/Logo";
 import Section from "./reusable/Section";
 
 const Footer = () => {
+  const [footerContactInfo, setFooterContactInfo] = useState(contactInfo);
+
+  useEffect(() => {
+    const fetchBasicDetails = async () => {
+      try {
+        const q = query(collection(db, "basic_details"), limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
+
+          // Construct new contact info array based on fetched data
+          // checking for various common field names given user didn't specify schema
+          const newContactInfo = [
+            {
+              icon: location,
+              info: data.address || data.location || "Usa - Washngton DC",
+            },
+            {
+              icon: phone,
+              info: data.phone || data.phoneNumber || data.mobile || "1234-56789",
+            },
+            {
+              icon: email,
+              info: data.email || "roarfitness@gmail.com",
+            },
+          ];
+          setFooterContactInfo(newContactInfo);
+        }
+      } catch (error) {
+        console.error("Error fetching basic details:", error);
+      }
+    };
+
+    fetchBasicDetails();
+  }, []);
+
   return (
     <Section className="bg-grey">
       <div className="container flex justify-between gap-6 max-md:flex-col lg:gap-2 xl:gap-3">
@@ -71,8 +112,8 @@ const Footer = () => {
           <div className="text-center text-sm font-medium text-secondary xl:text-2xl xl:font-bold">
             Company
           </div>
-          <div className="flex flex-col gap-5 xl:gap-6">
-            {contactInfo.map((info, i) => (
+          <div className="flex flex-col items-center gap-5 xl:gap-6">
+            {footerContactInfo.map((info, i) => (
               <a
                 key={i}
                 href="#"

@@ -61,11 +61,11 @@ const Blog = () => {
         viewport={{ once: true }}
         className="container space-y-4 xl:space-y-6"
       >
-        <div className="flex items-center justify-between">
+        <div className="relative flex items-center justify-center">
           <h2 className="text-center text-xl font-semibold lg:text-2xl lg:font-bold xl:text-3xl">
             Roar Fitness <span className="text-primary">Blog Posts</span>
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="absolute right-0 hidden lg:flex items-center gap-2">
             <img
               src={arrowLeftWhite}
               alt="-"
@@ -90,8 +90,8 @@ const Blog = () => {
               to={`/blogs/${post.id}`}
               key={post.id}
               className={`flex flex-col justify-end rounded-lg bg-cover bg-center ${i === 0
-                  ? "col-span-2 h-[380px] gap-2 p-3 lg:row-span-2 lg:gap-3 xl:px-5 xl:py-4"
-                  : "h-[186px] gap-1 p-2"
+                ? "col-span-2 h-[380px] gap-2 p-3 lg:row-span-2 lg:gap-3 xl:px-5 xl:py-4"
+                : "h-[186px] gap-1 p-2"
                 }`}
               style={{ backgroundImage: `url(${post.image || post.imageUrl || post.img})` }}
             >
@@ -99,8 +99,8 @@ const Blog = () => {
 
               <h3
                 className={`${i === 0
-                    ? "text-xl font-semibold md:text-2xl md:font-bold xl:text-[26px]"
-                    : "text-xs font-medium md:text-sm md:font-medium xl:text-2xl"
+                  ? "text-xl font-semibold md:text-2xl md:font-bold xl:text-[26px]"
+                  : "text-xs font-medium md:text-sm md:font-medium xl:text-2xl"
                   } text-white drop-shadow-md`}
               >
                 {post.title}
@@ -108,8 +108,8 @@ const Blog = () => {
               <div className="flex justify-between">
                 <div
                   className={`hidden items-center gap-1 lg:flex ${i === 0
-                      ? "xl:sm xl:font-light"
-                      : "text-[10px] md:text-xs lg:hidden"
+                    ? "xl:sm xl:font-light"
+                    : "text-[10px] md:text-xs lg:hidden"
                     }`}
                 >
                   <img
