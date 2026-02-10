@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import Programs from "./components/Programs";
 import Blogs from "./components/Blogs";
 import BlogDetail from "./components/BlogDetail";
+import Transformations from "./components/Transformations";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/blogs/:id" element={<BlogDetail />} />
+        <Route path="/our-transformations" element={<Transformations />} />
       </Routes>
       <Footer />
     </div>

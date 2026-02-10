@@ -49,8 +49,8 @@ export const navLinks = [
   },
   {
     id: 4,
-    title: "Membership",
-    url: "#membership",
+    title: "Our Transformations",
+    url: "/our-transformations",
     hasChildren: false,
   },
   {

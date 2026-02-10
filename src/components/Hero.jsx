@@ -9,7 +9,7 @@ import { revealFromRight, revealFromTop } from "../motion/hero";
 
 const Hero = () => {
   return (
-    <Section className="relative overflow-hidden">
+    <Section className="relative overflow-hidden flex items-center min-h-[calc(100vh-100px)] lg:min-h-[calc(100vh-120px)] !py-0">
       <div className="absolute left-0 h-full w-[260px] -translate-x-1/2 rounded-full bg-secondaryVar3 blur-[250px]" />
       <div className="absolute right-0 h-full w-[260px] translate-x-1/2 rounded-full bg-primaryVar4 blur-[250px]" />
       <div className="container space-y-4">
@@ -22,7 +22,7 @@ const Hero = () => {
               className="flex flex-col items-center gap-4 lg:gap-6 xl:gap-8"
             >
               <div className="text-xl font-semibold sm:text-2xl lg:text-3xl xl:text-[40px]">
-                Achive Your
+                Achieve Your
               </div>
               <div className="font-gagalin text-2xl sm:text-3xl lg:text-4xl xl:text-5xl">
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
