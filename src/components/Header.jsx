@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { chevronDown, menu } from "../assets";
 import { navLinks } from "../constants";
 import Logo from "./reusable/Logo";
@@ -17,6 +18,7 @@ export const headerVar = {
 };
 
 const Header = () => {
+  const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
@@ -51,28 +53,27 @@ const Header = () => {
     >
       <div className="container flex justify-between">
         <div className="mr-6 flex items-center gap-3 max-lg:flex-1 xl:gap-6">
-          <Logo />
+          <Link to="/">
+            <Logo />
+          </Link>
 
         </div>
         <nav className="hidden flex-1 items-center justify-around lg:flex">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.id}
-              href="#"
+              to={link.url}
               className="flex items-center gap-1 font-medium"
             >
               <div className="flex flex-col items-center gap-1">
                 <div className="transition-transform duration-500">
                   {link.title}
                 </div>
-                {link.id === 1 && (
+                {link.url === pathname && (
                   <div className="h-2 w-[200%] rounded-full bg-primary bg-gradient-to-r from-primary from-30% to-secondary" />
                 )}
               </div>
-              {link.hasChildren && (
-                <img src={chevronDown} alt="-" width={12} height={12} />
-              )}
-            </a>
+            </Link>
           ))}
         </nav>
 

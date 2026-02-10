@@ -1,30 +1,20 @@
-import Blog from "./components/Blog";
-import Community from "./components/Community";
-import Faq from "./components/Faq";
+
+import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import Hero from "./components/Hero";
-import OurWebsite from "./components/OurWebsite";
-import Plans from "./components/Plans";
-import Services from "./components/Services";
-import Testimonials from "./components/Testimonials";
-import Tools from "./components/Tools";
-import Trainers from "./components/Trainers";
+import Home from "./components/Home";
+import Programs from "./components/Programs";
+import Blogs from "./components/Blogs";
 
 function App() {
   return (
     <div className="font-vazirmatn text-white">
       <Header />
-      <Hero />
-      <OurWebsite />
-      <Services />
-      <Plans />
-      <Tools />
-      <Testimonials />
-      <Trainers />
-      <Blog />
-      <Community />
-      <Faq />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/programs" element={<Programs />} />
+        <Route path="/blogs" element={<Blogs />} />
+      </Routes>
       <Footer />
     </div>
   );

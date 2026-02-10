@@ -32,26 +32,31 @@ export const navLinks = [
   {
     id: 1,
     title: "Home",
+    url: "/",
     hasChildren: false,
   },
   {
     id: 2,
     title: "Programs",
+    url: "/programs",
     hasChildren: true,
   },
   {
     id: 3,
-    title: "Coaching",
-    hasChildren: true,
+    title: "Blogs",
+    url: "/blogs",
+    hasChildren: false,
   },
   {
     id: 4,
     title: "Membership",
+    url: "#membership",
     hasChildren: false,
   },
   {
     id: 5,
     title: "About Us",
+    url: "#about",
     hasChildren: false,
   },
 ];
