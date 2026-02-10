@@ -1,66 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Section from "./reusable/Section";
 import { motion } from "motion/react";
 import { revealVar } from "../motion/opacityReveal";
-
-const generalPlans = [
-    {
-        id: 1,
-        title: "Monthly General",
-        price: "29",
-        period: "month",
-        features: [
-            "Access to gym facilities",
-            "Standard equipment usage",
-            "Lockers included",
-            "Free WiFi",
-        ],
-        description: "Perfect for those who want flexibility and basic gym access.",
-    },
-    {
-        id: 2,
-        title: "Annual General",
-        price: "290",
-        period: "year",
-        features: [
-            "All Monthly benefits",
-            "2 months free",
-            "Priority support",
-            "Guest pass (1/month)",
-        ],
-        description: "Commit to your fitness journey and save with our annual plan.",
-    },
-];
-
-const supervisedPlans = [
-    {
-        id: 1,
-        title: "Monthly Supervised",
-        price: "99",
-        period: "month",
-        features: [
-            "Personal Trainer (2x/week)",
-            "Custom workout plan",
-            "Nutritional guidance",
-            "Progress tracking",
-        ],
-        description: "Get expert guidance to maximize your monthly progress.",
-    },
-    {
-        id: 2,
-        title: "Annual Supervised",
-        price: "990",
-        period: "year",
-        features: [
-            "All Monthly benefits",
-            "2 months free",
-            "Advanced body analysis",
-            "Unlimited group classes",
-        ],
-        description: "Transform your life with a year of dedicated coaching.",
-    },
-];
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 const ProgramCard = ({ plan, highlight }) => (
     <div
@@ -78,7 +22,7 @@ const ProgramCard = ({ plan, highlight }) => (
             >
                 {plan.period === "month" ? "Monthly Plan" : "Annual Plan"}
             </p>
-            <div className="font-gagalin text-2xl xl:text-[32px]">{plan.title}</div>
+            <div className="font-gagalin text-2xl xl:text-[32px]">{plan.title || `${plan.period === "month" ? "Monthly" : "Annual"} ${highlight ? "Supervised" : "General"}`}</div>
         </div>
 
         <div className="space-y-2 xl:space-y-3">
@@ -99,7 +43,7 @@ const ProgramCard = ({ plan, highlight }) => (
                 Features
             </p>
             <ul className="text-xs xl:text-sm space-y-1">
-                {plan.features.map((feature, i) => (
+                {plan.features?.map((feature, i) => (
                     <li key={i} className="list-inside list-disc">
                         {feature}
                     </li>
@@ -116,8 +60,8 @@ const ProgramCard = ({ plan, highlight }) => (
 
         <button
             className={`w-full rounded-[20px] py-3 text-lg font-medium transition-colors ${highlight
-                    ? "bg-primary hover:bg-primaryVar1 focus:bg-primaryVar2"
-                    : "bg-secondary hover:bg-secondaryVar1 focus:bg-secondaryVar2"
+                ? "bg-primary hover:bg-primaryVar1 focus:bg-primaryVar2"
+                : "bg-secondary hover:bg-secondaryVar1 focus:bg-secondaryVar2"
                 }`}
         >
             Select Plan
@@ -126,6 +70,51 @@ const ProgramCard = ({ plan, highlight }) => (
 );
 
 const Programs = () => {
+    const [generalPlans, setGeneralPlans] = useState([]);
+    const [supervisedPlans, setSupervisedPlans] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPrograms = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "programs"));
+                const fetchedPrograms = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+
+                    // Normalize program type to categorize correctly
+                    let type = 'general';
+                    const pTypeString = data.programType ? data.programType.toLowerCase() : '';
+                    if (pTypeString.includes('supervised')) {
+                        type = 'supervised';
+                    }
+
+                    // Normalize plan period
+                    const planString = data.planType ? data.planType.toLowerCase() : '';
+                    const period = planString.includes('year') || planString.includes('annual') ? 'year' : 'month';
+
+                    return {
+                        id: doc.id,
+                        title: data.title,
+                        price: data.price,
+                        period: period,
+                        features: data.facilities || [],
+                        description: data.description,
+                        type: type
+                    };
+                });
+
+                setGeneralPlans(fetchedPrograms.filter(p => p.type === 'general'));
+                setSupervisedPlans(fetchedPrograms.filter(p => p.type === 'supervised'));
+            } catch (error) {
+                console.error("Error fetching programs:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPrograms();
+    }, []);
+
     return (
         <Section className="min-h-screen pt-24">
             <motion.div
@@ -145,33 +134,51 @@ const Programs = () => {
                     </p>
                 </div>
 
-                {/* General Programs Section */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-greyLight"></div>
-                        <h2 className="text-xl font-bold lg:text-2xl text-secondary">General Programs</h2>
-                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-greyLight"></div>
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                     </div>
-                    <div className="grid gap-6 sm:grid-cols-2 lg:w-3/4 mx-auto">
-                        {generalPlans.map((plan) => (
-                            <ProgramCard key={plan.id} plan={plan} highlight={false} />
-                        ))}
-                    </div>
-                </div>
+                ) : (
+                    <>
+                        {/* General Programs Section */}
+                        {generalPlans.length > 0 && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-greyLight"></div>
+                                    <h2 className="text-xl font-bold lg:text-2xl text-secondary">General Programs</h2>
+                                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-greyLight"></div>
+                                </div>
+                                <div className="grid gap-6 sm:grid-cols-2 lg:w-3/4 mx-auto">
+                                    {generalPlans.map((plan) => (
+                                        <ProgramCard key={plan.id} plan={plan} highlight={false} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                {/* Supervised Programs Section */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-greyLight"></div>
-                        <h2 className="text-xl font-bold lg:text-2xl text-primary">Supervised Programs</h2>
-                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-greyLight"></div>
-                    </div>
-                    <div className="grid gap-6 sm:grid-cols-2 lg:w-3/4 mx-auto">
-                        {supervisedPlans.map((plan) => (
-                            <ProgramCard key={plan.id} plan={plan} highlight={true} />
-                        ))}
-                    </div>
-                </div>
+                        {/* Supervised Programs Section */}
+                        {supervisedPlans.length > 0 && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-greyLight"></div>
+                                    <h2 className="text-xl font-bold lg:text-2xl text-primary">Supervised Programs</h2>
+                                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-greyLight"></div>
+                                </div>
+                                <div className="grid gap-6 sm:grid-cols-2 lg:w-3/4 mx-auto">
+                                    {supervisedPlans.map((plan) => (
+                                        <ProgramCard key={plan.id} plan={plan} highlight={true} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {generalPlans.length === 0 && supervisedPlans.length === 0 && (
+                            <div className="text-center py-20 text-greyText">
+                                <p className="text-xl">No programs available at the moment.</p>
+                            </div>
+                        )}
+                    </>
+                )}
 
             </motion.div>
         </Section>

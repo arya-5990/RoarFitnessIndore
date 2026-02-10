@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   arrowLeftWhite,
   arrowRight,
@@ -6,14 +6,33 @@ import {
   chevronRight,
 } from "../assets";
 import Section from "./reusable/Section";
-import { trainers } from "../constants";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 import { motion } from "motion/react";
 import { revealVar } from "../motion/opacityReveal";
 
 const Trainers = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [trainersData, setTrainersData] = useState([]);
   const containerRef = useRef();
+
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "trainers"));
+        const fetchedTrainers = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTrainersData(fetchedTrainers);
+      } catch (error) {
+        console.error("Error fetching trainers:", error);
+      }
+    };
+
+    fetchTrainers();
+  }, []);
 
   const amount = window.innerWidth - window.innerWidth / 2;
 
@@ -70,15 +89,15 @@ const Trainers = () => {
         >
           <div className="absolute bottom-2 left-0 h-1/3 w-1/2 rounded-full bg-primaryVar5 blur-[350px]" />
           <div className="absolute bottom-2 right-0 h-1/3 w-1/2 rounded-full bg-secondaryVar3 blur-[350px]" />
-          {trainers.map((trainer, i) => (
+          {trainersData.map((trainer, i) => (
             <div key={trainer.id} className="flex shrink-0 flex-col rounded-xl">
               <img
-                src={trainer.image}
+                src={trainer.image || trainer.imageUrl || trainer.img}
                 alt=""
-                className="w-[119.33px] md:h-[220px] md:w-[214px] xl:size-[281px]"
+                className="w-[119.33px] md:h-[220px] md:w-[214px] xl:size-[281px] object-cover rounded-t-xl"
               />
-              <div className="space-y-3 rounded-xl bg-greyLight px-3 drop-shadow-sm">
-                <h3 className="font-medium xl:text-2xl xl:font-bold">
+              <div className="space-y-3 rounded-b-xl bg-greyLight px-3 pb-3 drop-shadow-sm">
+                <h3 className="font-medium xl:text-2xl xl:font-bold mt-2">
                   {trainer.name}
                 </h3>
                 <p className="text-xs font-medium text-greyTextVar1 lg:text-sm xl:text-base">
@@ -86,9 +105,8 @@ const Trainers = () => {
                 </p>
                 <button className="relative flex items-center gap-1">
                   <div
-                    className={`absolute left-0 z-10 size-5 rounded-full blur-[10px] ${
-                      i % 2 === 0 ? "bg-primaryVar5" : "bg-secondaryVar3"
-                    }`}
+                    className={`absolute left-0 z-10 size-5 rounded-full blur-[10px] ${i % 2 === 0 ? "bg-primaryVar5" : "bg-secondaryVar3"
+                      }`}
                   />
                   <div className="text-sm">Learn More</div>
                   <img src={arrowRight} alt="" />
