@@ -52,7 +52,7 @@ const ProgramCard = ({ plan, highlight }) => (
         </div>
 
         <div className="text-center text-lg font-bold xl:text-[28px] mt-4">
-            {plan.price}$
+            ₹ {plan.price}
             <span className="text-lg font-medium text-greyText">
                 /{plan.period === "month" ? "mo" : "yr"}
             </span>

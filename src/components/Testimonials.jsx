@@ -1,34 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { arrowLeftWhite, arrowRightWhite, quote } from "../assets";
 import Section from "./reusable/Section";
-import { testimonials } from "../constants";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 import { motion } from "motion/react";
 import { revealVar } from "../motion/opacityReveal";
 
 const Testimonials = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const displayedTestimonial = testimonials[currentIndex];
+  const [testimonialsData, setTestimonialsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const containerRef = useRef(null);
 
-  const nextTestimonials = [
-    testimonials[(currentIndex + 1) % testimonials.length],
-    testimonials[(currentIndex + 2) % testimonials.length],
-  ];
-  const handleNext = () => {
-    if (currentIndex === testimonials.length - 1) {
-      setCurrentIndex(0);
-    } else {
-      setCurrentIndex(currentIndex + 1);
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "testimonials"));
+        const data = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTestimonialsData(data);
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
+  const handleScroll = (scrollOffset) => {
+    if (containerRef.current) {
+      containerRef.current.scrollLeft += scrollOffset;
     }
   };
 
-  const handlePrev = () => {
-    if (currentIndex === 0) {
-      setCurrentIndex(testimonials.length - 1);
-    } else {
-      setCurrentIndex(currentIndex - 1);
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <svg
+          key={i}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill={i <= rating ? "#FBBF24" : "none"}
+          stroke={i <= rating ? "#FBBF24" : "#4B5563"}
+          strokeWidth="1.5"
+          className="w-4 h-4"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.557.557 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.557.557 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+        </svg>
+      );
     }
+    return <div className="flex gap-0.5 mt-1">{stars}</div>;
   };
+
+  if (loading) return null;
+  if (testimonialsData.length === 0) return null;
 
   return (
     <Section>
@@ -39,94 +69,71 @@ const Testimonials = () => {
         viewport={{ once: true }}
         className="container space-y-4 xl:space-y-6"
       >
-        <div className="items-center justify-between max-lg:flex">
-          <h2 className="text-center text-xl font-semibold lg:text-2xl lg:font-bold xl:text-3xl">
+        <div className="relative flex items-center justify-center">
+          <h2 className="text-xl font-semibold lg:text-2xl lg:font-bold xl:text-3xl text-center">
             What Our <span className="text-primary">Customers Say</span>
           </h2>
-          <div className="flex items-center gap-2 lg:hidden">
-            <button onClick={handlePrev}>
-              <img
-                src={arrowLeftWhite}
-                alt="-"
-                width={22.5}
-                height={28}
-                className="rounded-[4px] border-2 border-white px-1 py-2"
-              />
-            </button>
-            <button onClick={handleNext}>
-              <img
-                src={arrowRightWhite}
-                alt="-"
-                width={22.5}
-                height={28}
-                className="rounded-[4px] border-2 border-white px-1 py-2"
-              />
-            </button>
-          </div>
+
+          {testimonialsData.length > 5 && (
+            <div className="absolute right-0 hidden lg:flex items-center gap-2">
+              <button onClick={() => handleScroll(-300)}>
+                <img
+                  src={arrowLeftWhite}
+                  alt="Previous"
+                  width={22}
+                  height={22}
+                  className="rounded-[4px] border-2 border-white px-3 py-2"
+                />
+              </button>
+              <button onClick={() => handleScroll(300)}>
+                <img
+                  src={arrowRightWhite}
+                  alt="Next"
+                  width={22}
+                  height={22}
+                  className="rounded-[4px] border-2 border-white px-3 py-2"
+                />
+              </button>
+            </div>
+          )}
         </div>
-        <p className="text-center text-xs lg:text-sm xl:text-base">
-          At This Part you can See Few Of The Many Positive reviews Of Our
-          Customers.
+
+        {/* Mobile controls centered below heading if needed, or just rely on swipe. 
+            For now, simpler to just hide arrows on small screens or place them below. 
+            The previous logic hid them on some screens. I'll maintain the absolute right regarding larger screens.
+        */}
+
+        <p className="text-center text-xs lg:text-sm xl:text-base mb-6">
+          See what our members have to say about their journey with us.
         </p>
 
-        <div className="flex justify-between gap-3 lg:items-end">
-          <div className="flex items-center max-md:gap-2.5">
-            <img
-              src={displayedTestimonial.image}
-              alt={displayedTestimonial.name}
-              className="w-[144px] md:w-[215px]"
-            />
+        <div
+          ref={containerRef}
+          className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar pb-4"
+        >
+          {testimonialsData.map((testimonial, idx) => (
             <div
-              className={`relative self-end ${
-                currentIndex === 0 ? "md:max-xl:-ml-5" : "ml-5"
-              } space-y-1 rounded-xl bg-[#5B0408] p-2 max-md:w-2/3`}
+              key={testimonial.id || idx}
+              className="flex-shrink-0 w-[280px] sm:w-[320px] bg-[#5B0408] rounded-xl p-6 relative flex flex-col justify-between border border-white/5 hover:border-white/10 transition-colors"
             >
-              <div className="-translalate-y-1/2 absolute left-1/2 top-1/2 -z-10 h-2/3 w-2/3 -translate-x-1/2 rounded-full bg-primaryVar5 blur-[200px]" />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <h3 className="font-medium">{displayedTestimonial.name}</h3>
-                  <div className="text-xs text-greyText">
-                    {displayedTestimonial.about}
+              {/* Background Blur Effect */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3 h-2/3 bg-primaryVar5 blur-[80px] rounded-full -z-10 opacity-50" />
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-lg text-white">{testimonial.name}</h3>
+                    <p className="text-xs text-secondary font-medium tracking-wide uppercase">
+                      {testimonial.about || testimonial.role || "Member"}
+                    </p>
+                    {renderStars(testimonial.rating || 5)}
                   </div>
+                  <img src={quote} alt="quote" className="w-6 h-6 opacity-80" />
                 </div>
-                <img src={quote} alt='""' />
-              </div>
-              <div className="text-xs xl:text-sm">
-                {displayedTestimonial.review}
-              </div>
-            </div>
-          </div>
-          <button onClick={handlePrev} className="shrink-0">
-            <img
-              src={arrowLeftWhite}
-              alt="-"
-              width={36}
-              height={36}
-              className="size-6 rounded-[4px] border-2 border-white px-1 py-2 max-lg:hidden xl:size-[36px]"
-            />
-          </button>
-          <button onClick={handleNext} className="shrink-0">
-            <img
-              src={arrowRightWhite}
-              alt="-"
-              width={36}
-              height={36}
-              className="size-6 rounded-[4px] border-2 border-white px-1 py-2 max-lg:hidden xl:size-[36px]"
-            />
-          </button>
-          {nextTestimonials.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="relative flex shrink-0 items-end justify-center rounded-lg max-md:hidden"
-            >
-              <div className="absolute -z-10 h-full w-full bg-secondaryVar3 blur-[300px]" />
-              <img
-                src={testimonial.image}
-                alt={testimonial.name}
-                className="h-[280px] w-[102px] rounded-lg bg-secondaryVar3"
-              />
-              <div className="absolute mb-14 w-full -rotate-90 text-nowrap">
-                {testimonial.name}
+
+                <p className="text-sm text-greyText leading-relaxed line-clamp-6">
+                  "{testimonial.review}"
+                </p>
               </div>
             </div>
           ))}

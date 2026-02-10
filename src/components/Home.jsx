@@ -7,7 +7,6 @@ import OurWebsite from "./OurWebsite";
 import Plans from "./Plans";
 import Services from "./Services";
 import Testimonials from "./Testimonials";
-import Tools from "./Tools";
 import Trainers from "./Trainers";
 
 const Home = () => {
@@ -17,7 +16,6 @@ const Home = () => {
             <OurWebsite />
             <Services />
             <Plans />
-            <Tools />
             <Testimonials />
             <Trainers />
             <Blog />
