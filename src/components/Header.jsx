@@ -49,7 +49,7 @@ const Header = () => {
     <motion.header
       variants={headerVar}
       animate={hidden ? "hidden" : "visible"}
-      className="sticky top-0 z-50 bg-grey py-4 lg:py-5"
+      className="sticky top-0 z-50 bg-grey/95 py-4 backdrop-blur-sm shadow-lg shadow-black/50 lg:py-5"
     >
       <div className="container flex justify-between">
         <div className="mr-6 flex items-center gap-3 max-lg:flex-1 xl:gap-6">
@@ -58,7 +58,7 @@ const Header = () => {
           </Link>
 
         </div>
-        <nav className="hidden flex-1 items-center justify-around lg:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-10 xl:gap-14 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.id}
@@ -70,7 +70,7 @@ const Header = () => {
                   {link.title}
                 </div>
                 {link.url === pathname && (
-                  <div className="h-2 w-[200%] rounded-full bg-primary bg-gradient-to-r from-primary from-30% to-secondary" />
+                  <div className="h-[3px] w-[120%] rounded-full bg-primary bg-gradient-to-r from-primary from-30% to-secondary shadow-[0_0_8px_theme('colors.primary')]" />
                 )}
               </div>
             </Link>

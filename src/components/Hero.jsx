@@ -25,7 +25,7 @@ const Hero = () => {
                 Achieve Your
               </div>
               <div className="font-gagalin text-2xl sm:text-3xl lg:text-4xl xl:text-5xl">
-                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text tracking-widest text-transparent">
                   Fitness Goals
                 </span>
               </div>
@@ -47,7 +47,7 @@ const Hero = () => {
             <img
               src={heroImg}
               alt="Bodybuilder posing"
-              className="h-auto w-full max-w-[400px] object-contain drop-shadow-2xl sm:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]"
+              className="h-auto w-full max-w-[400px] drop-shadow-2xl sm:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px] object-contain"
             />
           </motion.div>
         </div>
