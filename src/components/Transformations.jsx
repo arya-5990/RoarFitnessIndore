@@ -92,7 +92,7 @@ const Transformations = () => {
     }, []);
 
     return (
-        <Section className="min-h-screen pt-24 pb-12 relative">
+        <Section id="transformations" className="min-h-screen pt-24 pb-12 relative">
             <motion.div
                 variants={revealVar}
                 initial="hidden"

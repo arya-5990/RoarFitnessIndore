@@ -15,10 +15,16 @@ const HeroCta = () => {
         change?"
       </div>
       <div className="flex items-center justify-between gap-3">
-        <button className="w-full rounded-xl bg-primary py-3 text-sm font-light transition-all duration-300 hover:bg-primaryVar1 hover:shadow-[0_0_15px_theme('colors.primary')] lg:rounded-2xl lg:text-base lg:font-medium xl:rounded-[20px] xl:text-lg">
+        <button
+          onClick={() => document.getElementById('transformations')?.scrollIntoView({ behavior: 'smooth' })}
+          className="w-full rounded-xl bg-primary py-3 text-sm font-light transition-all duration-300 hover:bg-primaryVar1 hover:shadow-[0_0_15px_theme('colors.primary')] lg:rounded-2xl lg:text-base lg:font-medium xl:rounded-[20px] xl:text-lg"
+        >
           Start Your Journey
         </button>
-        <button className="w-full rounded-xl border border-white/20 bg-transparent py-3 text-sm font-light text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] lg:rounded-2xl lg:text-base lg:font-medium xl:rounded-[20px] xl:text-lg">
+        <button
+          onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })}
+          className="w-full rounded-xl border border-white/20 bg-transparent py-3 text-sm font-light text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] lg:rounded-2xl lg:text-base lg:font-medium xl:rounded-[20px] xl:text-lg"
+        >
           Explore Programs
         </button>
       </div>

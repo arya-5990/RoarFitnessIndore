@@ -49,7 +49,7 @@ const Plans = () => {
   const filteredPlans = plansData.filter(plan => plan.periodNormalized === selectedPeriod);
 
   return (
-    <Section>
+    <Section id="plans">
       <motion.div
         variants={revealVar}
         initial="hidden"
